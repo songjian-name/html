@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>小球背景效果</title>
+    <style>
+        canvas{width:100%;height:100%;background:linear-gradient(to left top,rgb(119,13,147), rgb(113,219,233));position:fixed;top:0;left:0;}
+    </style>
+</head>
+<body>
+    <canvas id="canvas" ></canvas>
+    <script>
+
+        //不能使用class。 WallPaperEngine不支持
+        function BallCanvas(canvas){
+
+            //设置画布宽高
+            let width = canvas.width = canvas.offsetWidth;
+            let height = canvas.height = canvas.offsetHeight;
+
+            //画布上下文对象
+            let context = canvas.getContext("2d");
+
+            //鼠标指针对象 鼠标移动事件使用
+            let mousePoint = {x:0, y:0, mouseover:false};
+
+            //默认小球数量
+            let number = 60;
+
+            //小球和鼠标的连接距离
+            let distance = 200;
+
+            //默认小球颜色
+            let color = "rgb(210,225,226)";
+
+            //画笔渐变色
+            let gradient = context.createLinearGradient(0,0,width,height);
+            gradient.addColorStop(0, 'rgb(113,219,233)');
+            gradient.addColorStop(1, "rgb(119,13,147)");
+
+            //初始化小球数组
+            let ballArray = [];
+            for (let i = 0; i < number; i++) {
+                ballArray.push(new Ball());
+            }
+
+            //添加鼠标事件 鼠标移动
+            canvas.onmousemove = function(e){
+                mousePoint.x = e.offsetX;
+                mousePoint.y = e.offsetY;
+                mousePoint.mouseover = true;
+            };
+            //鼠标离开
+            canvas.onmouseout = function(){
+                mousePoint.mouseover = false;
+            };
+
+            //公有方法 画图
+            this.draw = ()=>{
+                //清空画布
+                context.clearRect(0,0,width,height);
+                for(let ball of ballArray){
+
+                    //如果鼠标悬停在画布上 并且 当前小球的距离小于200，小球向鼠标方向移动 并且改变颜色
+                    if(mousePoint.mouseover && ball.measure(mousePoint)<distance){
+                        let vx = (mousePoint.x - ball.x) / 100;
+                        let vy = (mousePoint.y - ball.y) / 100;
+                        ball.x += vx;
+                        ball.y += vy;
+                        color = "rgb(116,116,190)";
+                    } else {
+                        ball.x += ball.vx;
+                        ball.y += ball.vy;
+                        color = gradient;
+                    }
+
+                    //边缘检测。如果小球触碰到边缘 反弹
+                    if(ball.x<ball.r || ball.x>width-ball.r){
+                        ball.vx *= -1;
+                    }
+                    if(ball.y<ball.r || ball.y>height-ball.r){
+                        ball.vy *= -1;
+                    }
+
+                    //
+                    context.fillStyle = color;
+                    context.beginPath();
+                    context.arc(ball.x,ball.y,ball.r,0,Math.PI*2);
+                    context.fill();
+
+                    //画连线
+                    for (let another of ballArray){
+                        context.beginPath();
+                        if(ball.measure(another)<distance){
+                            context.lineWidth = 0.3;
+                            context.strokeStyle = color;
+                            context.moveTo(ball.x,ball.y);
+                            context.lineTo(another.x,another.y)
+                            context.stroke();
+                        }
+                    }
+                }
+            };
+            //尺寸变化
+            this.resize = ()=>{
+                width = canvas.width = canvas.offsetWidth;
+                height = canvas.height = canvas.offsetHeight;
+            };
+
+            //小球类
+            function Ball(){
+                //小球半径
+                this.r = random(18,28);
+                //小球中心点 横纵坐标
+                this.x = random(this.r,width-this.r);
+                this.y = random(this.r,height-this.r);
+                //小球横纵速度
+                this.vx = random(-2, 2);
+                this.vy = random(-2, 2);
+
+                //在给定范围，返回一个随机数
+                function random(min, max){
+                    return Math.random() * (max - min) + min;
+                }
+                //测量到另一个小球的（中心点的）距离。
+                this.measure = ball => Math.sqrt(Math.pow(ball.x - this.x, 2) + Math.pow(ball.y - this.y, 2));
+            }
+        }
+
+
+        let canvas1 = document.querySelector("#canvas");
+        // let canvas2 = document.querySelector("#canvas2");
+        let ballCanvas1 = new BallCanvas(canvas1);
+        // let ballCanvas2 = new BallCanvas(canvas2);
+
+        window.onresize = ()=>{
+            ballCanvas1.resize();
+            // ballCanvas2.resize();
+        };
+        function animate(){
+            ballCanvas1.draw();
+            // ballCanvas2.draw();
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
