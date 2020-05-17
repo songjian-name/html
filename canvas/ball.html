@@ -9,10 +9,13 @@
 </head>
 <body>
     <canvas id="canvas" ></canvas>
-    <script>
 
-        //不能使用class。 WallPaperEngine不支持
+    <script>
+        //不能使用class。 Wallpaper Engine不支持
         function BallCanvas(canvas){
+
+            //默认小球数量
+            this.number = 60;
 
             //设置画布宽高
             let width = canvas.width = canvas.offsetWidth;
@@ -23,9 +26,6 @@
 
             //鼠标指针对象 鼠标移动事件使用
             let mousePoint = {x:0, y:0, mouseover:false};
-
-            //默认小球数量
-            let number = 60;
 
             //小球和鼠标的连接距离
             let distance = 200;
@@ -40,7 +40,7 @@
 
             //初始化小球数组
             let ballArray = [];
-            for (let i = 0; i < number; i++) {
+            for (let i = 0; i < this.number; i++) {
                 ballArray.push(new Ball());
             }
 
@@ -82,7 +82,7 @@
                         ball.vy *= -1;
                     }
 
-                    //
+                    //画圆
                     context.fillStyle = color;
                     context.beginPath();
                     context.arc(ball.x,ball.y,ball.r,0,Math.PI*2);
@@ -106,8 +106,15 @@
                 width = canvas.width = canvas.offsetWidth;
                 height = canvas.height = canvas.offsetHeight;
             };
+            this.setNumber = number =>{
+                this.number = number;
+                ballArray = [];
+                for (let i = 0; i < this.number; i++) {
+                    ballArray.push(new Ball());
+                }
+            };
 
-            //小球类
+            //小球内部类
             function Ball(){
                 //小球半径
                 this.r = random(18,28);
@@ -127,22 +134,24 @@
             }
         }
 
+        /* ******************** 调用 *********************/
+        let canvas = document.querySelector("#canvas");
+        let ballCanvas = new BallCanvas(canvas);
 
-        let canvas1 = document.querySelector("#canvas");
-        // let canvas2 = document.querySelector("#canvas2");
-        let ballCanvas1 = new BallCanvas(canvas1);
-        // let ballCanvas2 = new BallCanvas(canvas2);
-
-        window.onresize = ()=>{
-            ballCanvas1.resize();
-            // ballCanvas2.resize();
-        };
-        function animate(){
-            ballCanvas1.draw();
-            // ballCanvas2.draw();
+        //动画
+        (function animate(){
+            ballCanvas.draw();
             requestAnimationFrame(animate);
-        }
-        animate();
+        }());
+
+        //窗口尺寸变化事件
+        window.onresize = ()=> ballCanvas.resize();
+
+        /* 点击重置小球数量
+        canvas.onclick = ()=>{
+            ballCanvas.setNumber(10);
+        };
+         */
     </script>
 </body>
 </html>
