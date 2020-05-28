@@ -1,7 +1,7 @@
 <style>
     /*画布样式 默认宽300px，高150px*/
     canvas{
-        background:#996;
+        background:#832;
     }
 </style>
 
@@ -21,9 +21,9 @@
     (function draw(){
 
         //画出一个矩形 4个参数分别：左上x坐标，左上y坐标，矩形宽度，矩形高度
-        context.fillRect(x+=1,10,1,30);
+        context.fillRect(x+=1,20,1,20);
 
-        //请求动画回调
+        //当屏幕完成刷新后，执行当前draw函数。
         requestAnimationFrame(draw);
     })();
 </script>
