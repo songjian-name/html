@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>光晕效果</title>
+    <style>
+        canvas{
+            position:fixed;
+            top:0;left:0;
+            background:#333;
+        }
+    </style>
+</head>
+<body>
+    <canvas></canvas>
+    <script>
+
+        let haloCanvas = function(){
+            let canvas = document.querySelector("canvas");
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+            let context = canvas.getContext("2d");
+            class Halo {
+                constructor(x) {
+                    if(x){
+                        this.x = x;
+                    }else{
+                        this.x = random(0,width);
+                    }
+                    this.r = random(15,35);
+                    this.y = random(0,height);
+                    this.blur = random(1,10);
+                    this.vx = random(0.2,1);
+                    this.vy = random(-0.2,0.2);
+                    this.vr = random(-0.1,0.1);
+                    this.vb = random(-0.1,0.1);
+                }
+            }
+
+            let array = [];
+            for (let i = 0; i < 30; i++) {
+                array.push(new Halo());
+            }
+
+            function draw(){
+                context.clearRect(0,0,width,height);
+                for(let i=0; i<array.length; i++){
+                    context.beginPath();
+                    let halo = array[i];
+                    context.arc(-halo.r,-halo.r,halo.r,0,2*Math.PI);
+                    halo.x += halo.vx;
+                    halo.y += halo.vy;
+                    halo.blur += halo.vb;
+                    if(halo.blur>10 || halo.blur<1){
+                        halo.vb *= -1;
+                    }
+                    context.shadowOffsetX = halo.x;
+                    context.shadowOffsetY = halo.y;
+                    context.shadowBlur = halo.blur ;
+                    context.shadowColor = "rgba(231,222,186,0.2)";
+                    context.fill();
+
+                    if(halo.x>width+halo.r*2 || halo.y>height+halo.r*2 || halo.y<0){
+                        array[i] = new Halo(1);
+                    }
+                }
+            }
+
+            function random(min, max){
+                return Math.random()*(max-min) + min;
+            }
+
+            (function move(){
+                draw();
+                requestAnimationFrame(move);
+            }());
+
+            return {
+                resize:function(){
+                    width = canvas.width = window.innerWidth;
+                    height = canvas.height = window.innerHeight;
+                }
+            }
+        }();
+
+        window.onresize = function(){
+            haloCanvas.resize();
+        }
+    </script>
+</body>
+</html>
