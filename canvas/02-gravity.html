@@ -15,8 +15,8 @@
     <canvas></canvas>
     <script>
         let canvas = document.querySelector("canvas");
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
+        let width = canvas.width = canvas.offsetWidth;
+        let height = canvas.height = canvas.offsetHeight;
 
         let context = canvas.getContext("2d");
         context.fillStyle = "#DC6D4F";
@@ -49,7 +49,7 @@
                 }
             }
 
-            context.arc(x,y,50,0,Math.PI*2);
+            context.arc(x,y,r,0,Math.PI*2);
             context.fill();
             requestAnimationFrame(draw);
         })();
