@@ -1,3 +1,10 @@
+<!--
+    作者:那么的宋健
+    原贴地址:https://songjian.name/html/1
+    发布时间:2021-01-18
+-->
+
+<!-- 画布默认内外像素300*150 -->
 <canvas></canvas>
 
 <script>
@@ -15,9 +22,12 @@
     (function draw(){
 
         //画出一个矩形 4个参数分别：左上x坐标，左上y坐标，矩形宽度，矩形高度
-        context.fillRect(x++,50,1,50);
+        //不断的画出宽5高50的矩形 间隙是5
+        context.fillRect(x+=10, 50, 5, 50);
 
-        //当屏幕完成刷新后，执行当前draw函数。
+        //当屏幕完成一帧刷新后，再执行当前draw函数。
         requestAnimationFrame(draw);
+
     })();
+
 </script>
